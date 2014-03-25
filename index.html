@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Catalog</title>
+</head>
+<body ng-app>
+    <div ng-controller="homeController">
+        <center>
+            <label>Username:</label><input type="text" name="username" ng-model="username" ng-minlength=5 /><br/>
+            <label>Password:</label><input type="password" name="password" ng-model="password" /><br/>
+            <button ng-click="login()">Login</button>
+        </center>
+    </div>
+
+    <script src="/angularCatalog/libs/angular-1.2.15/angular.min.js"></script>
+    <script src="/angularCatalog/Scripts/Controller/homeController.js"></script>
+</body>
+</html>
