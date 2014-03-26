@@ -9,8 +9,16 @@ catalogApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
             when('/category', {
-                templateUrl: '/angularCatalog/views/category.html',
+                templateUrl: '/angularCatalog/views/collection.html',
                 controller: 'categoryController'
+            }).
+            when('/category/add', {
+                templateUrl: '/angularCatalog/views/add_collection.html',
+                controller: 'addCollectionController'
+            }).
+            when('/category/:collectionId', {
+                templateUrl: '/angularCatalog/views/display_collection.html',
+                controller: 'displayCollectionController'
             }).
             when('/products', {
                 templateUrl: '/angularCatalog/views/products.html',

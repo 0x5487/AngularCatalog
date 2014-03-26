@@ -5,7 +5,7 @@
 </head>
 <body ng-app="catalogApp">
     <div>
-        <a href="#/category">Category</a>, <a href="#/products">Product</a>
+        [<a href="#/category">Category</a>] [<a href="#/products">Product</a>]
     </div>
     <hr/>
     <div ng-view>
@@ -15,7 +15,8 @@
 
     <script src="/angularCatalog/libs/angular-1.2.15/angular.min.js"></script>
     <script src="/angularCatalog/libs/angular-1.2.15/angular-route.js"></script>
-    <script src="/angularCatalog/scripts/Controller/mainController.js"></script>
+    <script src="/angularCatalog/scripts/Controller/collectionController.js"></script>
+    <script src="/angularCatalog/scripts/Controller/productsController.js"></script>
     <script src="/angularCatalog/scripts/app.js"></script>
 </body>
 </html>
