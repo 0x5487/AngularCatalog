@@ -9,22 +9,22 @@ catalogApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
             when('/collection', {
-                templateUrl: '/angularCatalog/views/collection.html',
+                templateUrl: '/views/collection.html',
                 controller: 'collectionController'
             }).
             when('/collection/add', {
-                templateUrl: '/angularCatalog/views/add_collection.html',
+                templateUrl: '/views/add_collection.html',
                 controller: 'addCollectionController'
             }).
             when('/collection/:collectionId', {
-                templateUrl: '/angularCatalog/views/display_collection.html',
+                templateUrl: '/views/display_collection.html',
                 controller: 'displayCollectionController'
             }).
             when('/products', {
-                templateUrl: '/angularCatalog/views/products.html',
+                templateUrl: '/views/products.html',
                 controller: 'productController'
             }).
             otherwise({
-                redirectTo: '/main.html'
+                redirectTo: '/collection'
             });
     }]);

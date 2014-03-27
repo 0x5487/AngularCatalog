@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Catalog</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link href="css/style.css" rel="stylesheet" />
+</head>
+<body ng-app="catalogApp">
+<div>
+    [<a href="#/collection">Collection</a>] [<a href="#/products">Product</a>]
+</div>
+<hr/>
+<div ng-view>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="/libs/angular-1.2.15/angular.min.js"></script>
+<script src="/libs/angular-1.2.15/angular-route.js"></script>
+<script src="/scripts/Controller/collectionController.js"></script>
+<script src="/scripts/Controller/productsController.js"></script>
+<script src="/scripts/app.js"></script>
+<script>
+
+    $(function(){
+        $("#cl-wrapper").css({opacity:1,'margin-left':0});
+    });
+</script>
+</body>
+</html>

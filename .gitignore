@@ -1,9 +1,4 @@
-/BuildedDLL
-bin
-obj
-packages
-*.suo
-*.user
+node_modules
 .idea
 
 
