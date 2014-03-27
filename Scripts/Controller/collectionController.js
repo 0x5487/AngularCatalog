@@ -2,7 +2,7 @@
  * Created by jalee on 3/25/14.
  */
 
-function categoryController($scope){
+function collectionController($scope){
 
     $scope.collections = [ { Id:1, Name: "Man", Description: "well....", IsSelected: false },
                            { Id:2, Name: "Women", Description: "blah...blah...", IsSelected: false },
@@ -38,8 +38,9 @@ function categoryController($scope){
 
     $scope.selectedAll = function(e) {
 
-        var $chkAll = angular.element(e.target);
-        var isChecked = $chkAll.attr("checked");
+
+        var $chkAll = angular.element($(e.target));
+        var isChecked = $chkAll.is(':checked');
 
         for(var i=0; i < $scope.collections.length; i++){
             if(isChecked)
