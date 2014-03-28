@@ -5,5 +5,6 @@
 
 function productController(){
 
+    $scope.viewClass = "cl-mcont";
 
 }

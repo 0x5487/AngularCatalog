@@ -8,8 +8,8 @@ var catalogApp = angular.module('catalogApp', [
 catalogApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
-            when('/collection', {
-                templateUrl: '/views/collection.html',
+            when('/collections', {
+                templateUrl: '/views/collections.html',
                 controller: 'collectionController'
             }).
             when('/collection/add', {
@@ -21,10 +21,18 @@ catalogApp.config(['$routeProvider',
                 controller: 'displayCollectionController'
             }).
             when('/products', {
-                templateUrl: '/views/products.html',
+                templateUrl: '/views/collection_old.html',
                 controller: 'productController'
             }).
+            when('/pages', {
+                templateUrl: '/views/pages.html',
+                controller: 'pagesController'
+            }).
+            when('/themes/:themeId', {
+                templateUrl: '/views/theme_detail.html',
+                controller: 'themeDetailController'
+            }).
             otherwise({
-                redirectTo: '/collection'
+                redirectTo: '/'
             });
     }]);
