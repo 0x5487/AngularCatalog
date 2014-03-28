@@ -1,3 +1,6 @@
+/**
+ * Created by jason on 2014/3/28.
+ */
 $(function(){
     //Functions
     function toggleSideBar(_this){
@@ -72,10 +75,6 @@ $(function(){
             // var height = ($(document).height() < $(window).height())?$(window).height():menuH;
             //updateHeight();
             $("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
-            /*if(CodeMirror){
-             cm.refresh();
-             }*/
-
         });
         e.preventDefault();
     });
@@ -226,102 +225,8 @@ $(function(){
 
 
 
-
 });
 
 $(function(){
-    if($('body').hasClass('animated')){
-        $("#cl-wrapper").css({opacity:1,'margin-left':0});
-    }
-
-    /*Porlets Actions*/
-    $('.minimize').click(function(e){
-        var h = $(this).parents(".header");
-        var c = h.next('.content');
-        var p = h.parent();
-
-        c.slideToggle();
-
-        p.toggleClass('closed');
-
-        e.preventDefault();
-    });
-
-    $('.refresh').click(function(e){
-        var h = $(this).parents(".header");
-        var p = h.parent();
-        var loading = $('<div class="loading"><i class="fa fa-refresh fa-spin"></i></div>');
-
-        loading.appendTo(p);
-        loading.fadeIn();
-        setTimeout(function() {
-            loading.fadeOut();
-        }, 1000);
-
-        e.preventDefault();
-    });
-
-    $('.close-down').click(function(e){
-        var h = $(this).parents(".header");
-        var p = h.parent();
-
-        p.fadeOut(function(){
-            $(this).remove();
-        });
-        e.preventDefault();
-    });
-    /*End of porlets actions*/
-
-    /*Chat*/
-
-    $('.side-chat .content .contacts li a').click(function(e){
-        var user = $('<span>' + $(this).html() + '</span>');
-        user.find('i').remove();
-
-        $('#chat-box').fadeIn();
-        $('#chat-box .header span').html(user.html());
-        $("#chat-box .nano").nanoScroller();
-        $("#chat-box .nano").nanoScroller({ scroll: 'top' });
-        e.preventDefault();
-    });
-
-    $('#chat-box .header .close').click(function(r){
-        var h = $(this).parents(".header");
-        var p = h.parent();
-
-        p.fadeOut();
-        r.preventDefault();
-    });
-
-    function addText(input){
-        var message = input.val();
-        var chat = input.parents('#chat-box').find('.content .conversation');
-
-        if(message != ''){
-            input.val('');
-            chat.append('<li class="text-right"><p>' + message + '</p></li>');
-            $("#chat-box .nano .content").animate({ scrollTop: $("#chat-box .nano .content .conversation").height() }, 1000);
-        }
-    }
-
-
-    $('.chat-input .input-group button').click(function(){
-        addText( $(this).parents('.input-group').find('input'));
-    });
-
-    $('.chat-input .input-group input').keypress(function(e){
-        if(e.which == 13) {
-            addText($(this));
-        }
-    });
-
-    $(document).click(function(){
-        $('#chat-box').fadeOut();
-
-    });
-
-
-
-
-
+    $("#cl-wrapper").css({opacity:1,'margin-left':0});
 });
