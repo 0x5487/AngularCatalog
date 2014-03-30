@@ -1,0 +1,5 @@
+{
+    "name": "HelloPage",
+    "content": "Welcome to my hello page.",
+	"template": "basic"
+}

@@ -5,7 +5,6 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-var vhost = require('vhost');
 var shoptime = require('./shoptime/models/');
 
 var app = express();
@@ -37,10 +36,10 @@ app.all("*", function (req, res, next) {
     var isFound = false;
 
     stores.forEach(function (store) {
-        store.DomainNames.forEach(function (domainName) {
+        store.domainNames.forEach(function (domainName) {
             if (domainName == host && isFound == false) {
                 isFound = true;
-                return store.App(req, res, next);
+                return store.app(req, res, next);
             }
         });
     });
