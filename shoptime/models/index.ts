@@ -18,14 +18,20 @@ export class Store {
         this.Init();
     }
 
+    get Name():string{
+        return this._name;
+    }
+
     private Init():void {
 
         this._domainNames.push(this._name + ".mystore.com");
+        var name = this._name;
 
-
-        this._app.get('/', function(req, res){
-            var name = this._name;
-            res.send('Hello' + this._name);
+        this._app.set('views', path.join(__dirname, '../../views'));
+        this._app.set('view engine', 'ejs');
+        this._app.use(express.static(path.join(__dirname, 'public')));
+        this._app.get('/', (req, res) =>{
+            res.render('index', { title: name });
         });
     }
 

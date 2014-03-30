@@ -10,12 +10,23 @@ var Store = (function () {
         this._domainNames = [];
         this.Init();
     }
+    Object.defineProperty(Store.prototype, "Name", {
+        get: function () {
+            return this._name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     Store.prototype.Init = function () {
         this._domainNames.push(this._name + ".mystore.com");
+        var name = this._name;
 
+        this._app.set('views', path.join(__dirname, '../../views'));
+        this._app.set('view engine', 'ejs');
+        this._app.use(express.static(path.join(__dirname, 'public')));
         this._app.get('/', function (req, res) {
-            var name = this._name;
-            res.send('Hello' + this._name);
+            res.render('index', { title: name });
         });
     };
 

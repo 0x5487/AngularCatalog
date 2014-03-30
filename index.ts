@@ -32,13 +32,13 @@ if ('development' == app.get('env')) {
 }
 
 
-/*
+
 var jason = new shoptime.Store("jason");
 
 var stores:Array<shoptime.Store> = new Array<shoptime.Store>();
 stores.push(jason);
 
-app.get("*", (req, res, next) =>{
+app.all("*", (req, res, next) =>{
 
     var host = req.host;
     var isFound: boolean = false;
@@ -49,14 +49,14 @@ app.get("*", (req, res, next) =>{
 
             if(domainName == host && isFound == false){
                 isFound = true;
-                store.App.emit('request', req, res);
+                return store.App(req, res, next);
             }
         });
-
-        if(isFound == false){
-            next();
-        }
     });
+
+    if(isFound == false){
+        next();
+    }
 });
 
 
@@ -66,9 +66,18 @@ app.get('/account/add/:name', (req, res)=>{
 
     if(name != null){
 
-       var store = new shoptime.Store(name);
-        var domainName = name + "mystore.com";
-        app.use(vhost(domainName, store.App()));
+        var isFound:boolean = false;
+        stores.forEach( (store) =>{
+            if(isFound == false && store.Name == name){
+                isFound = true;
+            }
+        });
+
+        if(isFound == false){
+            var newStore = new shoptime.Store(name);
+            stores.push(newStore);
+        }
+
         res.send("add " + name);
     }else{
         res.send("can't find the name");
@@ -78,7 +87,7 @@ app.get('/account/add/:name', (req, res)=>{
  app.get('/', function(req, res){
  res.send('Hello from main!');
  });
-*/
+
 
 app.get('/', routes.index);
 app.get('/main', routes.main);

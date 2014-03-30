@@ -27,40 +27,55 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-/*
 var jason = new shoptime.Store("jason");
-var stores:Array<shoptime.Store> = new Array<shoptime.Store>();
+
+var stores = new Array();
 stores.push(jason);
-app.get("*", (req, res, next) =>{
-var host = req.host;
-var isFound: boolean = false;
-stores.forEach((store)=>{
-store.DomainNames.forEach( (domainName)=>{
-if(domainName == host && isFound == false){
-isFound = true;
-store.App.emit('request', req, res);
-}
+
+app.all("*", function (req, res, next) {
+    var host = req.host;
+    var isFound = false;
+
+    stores.forEach(function (store) {
+        store.DomainNames.forEach(function (domainName) {
+            if (domainName == host && isFound == false) {
+                isFound = true;
+                return store.App(req, res, next);
+            }
+        });
+    });
+
+    if (isFound == false) {
+        next();
+    }
 });
-if(isFound == false){
-next();
-}
+
+app.get('/account/add/:name', function (req, res) {
+    var name = req.params.name;
+
+    if (name != null) {
+        var isFound = false;
+        stores.forEach(function (store) {
+            if (isFound == false && store.Name == name) {
+                isFound = true;
+            }
+        });
+
+        if (isFound == false) {
+            var newStore = new shoptime.Store(name);
+            stores.push(newStore);
+        }
+
+        res.send("add " + name);
+    } else {
+        res.send("can't find the name");
+    }
 });
+
+app.get('/', function (req, res) {
+    res.send('Hello from main!');
 });
-app.get('/account/add/:name', (req, res)=>{
-var name = req.params.name;
-if(name != null){
-var store = new shoptime.Store(name);
-var domainName = name + "mystore.com";
-app.use(vhost(domainName, store.App()));
-res.send("add " + name);
-}else{
-res.send("can't find the name");
-}
-});
-app.get('/', function(req, res){
-res.send('Hello from main!');
-});
-*/
+
 app.get('/', routes.index);
 app.get('/main', routes.main);
 app.get('/users', user.list);
