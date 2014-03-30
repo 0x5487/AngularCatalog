@@ -1,4 +1,6 @@
 /// <reference path="./typed/node/node.d.ts" />
+
+
 'use strict';
 var express = require('express');
 var routes = require('./routes');
@@ -8,7 +10,9 @@ var path = require('path');
 var vhost = require('vhost');
 var shoptime = require('./shoptime/models/');
 
+
 var app = express();
+
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -27,45 +31,59 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
+
 /*
 var jason = new shoptime.Store("jason");
+
 var stores:Array<shoptime.Store> = new Array<shoptime.Store>();
 stores.push(jason);
+
 app.get("*", (req, res, next) =>{
-var host = req.host;
-var isFound: boolean = false;
-stores.forEach((store)=>{
-store.DomainNames.forEach( (domainName)=>{
-if(domainName == host && isFound == false){
-isFound = true;
-store.App.emit('request', req, res);
-}
+
+    var host = req.host;
+    var isFound: boolean = false;
+
+    stores.forEach((store)=>{
+
+        store.DomainNames.forEach( (domainName)=>{
+
+            if(domainName == host && isFound == false){
+                isFound = true;
+                store.App.emit('request', req, res);
+            }
+        });
+
+        if(isFound == false){
+            next();
+        }
+    });
 });
-if(isFound == false){
-next();
-}
-});
-});
+
+
 app.get('/account/add/:name', (req, res)=>{
-var name = req.params.name;
-if(name != null){
-var store = new shoptime.Store(name);
-var domainName = name + "mystore.com";
-app.use(vhost(domainName, store.App()));
-res.send("add " + name);
-}else{
-res.send("can't find the name");
-}
+
+    var name = req.params.name;
+
+    if(name != null){
+
+       var store = new shoptime.Store(name);
+        var domainName = name + "mystore.com";
+        app.use(vhost(domainName, store.App()));
+        res.send("add " + name);
+    }else{
+        res.send("can't find the name");
+    }
 });
-app.get('/', function(req, res){
-res.send('Hello from main!');
-});
+
+ app.get('/', function(req, res){
+ res.send('Hello from main!');
+ });
 */
+
 app.get('/', routes.index);
 app.get('/main', routes.main);
 app.get('/users', user.list);
 
-http.createServer(app).listen(app.get('port'), function () {
+http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
-//# sourceMappingURL=index.js.map

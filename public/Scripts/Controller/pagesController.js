@@ -1,19 +1,9 @@
-/**
- * Created by jalee on 3/28/2014.
- */
-
-function pagesController($scope, $window)
-{
+function pagesController($scope, $window) {
     $scope.viewClass = "cl-mcont";
-
-
 }
-
 
 //add
-function addPageController($scope, $window)
-{
+function addPageController($scope, $window) {
     $scope.viewClass = "cl-mcont";
-
-
 }
+//# sourceMappingURL=pagesController.js.map
