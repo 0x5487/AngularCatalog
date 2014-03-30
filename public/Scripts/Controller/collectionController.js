@@ -1,4 +1,4 @@
-/// <reference path="../../../typed/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
 function collectionController($scope) {
     $scope.collections = [
         { Id: 1, Name: "Man", Description: "well....", IsSelected: false },

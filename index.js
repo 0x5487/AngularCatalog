@@ -1,4 +1,4 @@
-/// <reference path="./typed/node/node.d.ts" />
+/// <reference path="./typings/node/node.d.ts" />
 'use strict';
 var express = require('express');
 var routes = require('./routes');
@@ -36,10 +36,10 @@ app.all("*", function (req, res, next) {
     var isFound = false;
 
     stores.forEach(function (store) {
-        store.domainNames.forEach(function (domainName) {
+        store.DomainNames.forEach(function (domainName) {
             if (domainName == host && isFound == false) {
                 isFound = true;
-                return store.app(req, res, next);
+                return store.App(req, res, next);
             }
         });
     });

@@ -1,4 +1,4 @@
-/// <reference path="../../../typed/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
 function productController($scope) {
     $scope.viewClass = "cl-mcont";
 }
