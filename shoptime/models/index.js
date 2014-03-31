@@ -6,12 +6,12 @@ var fs = require('fs');
 var ejs = require('ejs');
 
 var Store = (function () {
-    function Store(name) {
+    function Store(name, rootPath) {
         this._name = name;
         this._app = express();
         this._domainNames = [];
         this._defaultTheme = "simple";
-        this._myStoragePath = "D:/OpenSource/AngularCatalog/storage/jason/";
+        this._myStoragePath = path.join(rootPath, name);
         this.Init();
     }
     Object.defineProperty(Store.prototype, "name", {
@@ -49,11 +49,29 @@ var Store = (function () {
     Store.prototype.Init = function () {
         var _this = this;
         this._domainNames.push(this._name + ".mystore.com");
-        var name = this._name;
-
         this._app.set('views', path.join(__dirname, '../../views'));
         this._app.set('view engine', 'ejs');
-        this._app.use('/public', express.static(path.join(this._myStoragePath, 'themes/' + this._defaultTheme + '/public')));
+        this._app.use(express.cookieParser());
+        this._app.use(express.session({ secret: '1234567890QWERTY' }));
+
+        this._app.get("*", function (req, res, next) {
+            var theme = req.query.theme;
+            var sess = req.session;
+            if (theme != null && theme.length > 0) {
+                sess.theme = theme;
+            } else {
+                if (sess.theme == null) {
+                    sess.theme = _this.defaultTheme;
+                }
+            }
+
+            next();
+        });
+
+        this._app.use('/public', function (req, res, next) {
+            var handler = express.static(path.join(_this._myStoragePath, 'themes/' + req.session.theme + '/public'));
+            handler(req, res, next);
+        });
 
         this._app.get('/', function (req, res) {
             var fileLocation = path.join(_this._myStoragePath, 'pages/home.json');
@@ -99,7 +117,7 @@ var Store = (function () {
                     if (page.template == "none") {
                         res.send(page.content);
                     } else {
-                        var templatePath = path.join(_this._myStoragePath, "themes/" + _this._defaultTheme + '/templates/' + page.template + ".ejs");
+                        var templatePath = path.join(_this._myStoragePath, "themes/" + req.session.theme + '/templates/' + page.template + ".ejs");
 
                         fs.readFile(templatePath, 'utf8', function (err, template) {
                             if (err)
@@ -112,6 +130,8 @@ var Store = (function () {
                 });
             }
         });
+
+        this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));
     };
     return Store;
 })();

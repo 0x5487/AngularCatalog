@@ -1,4 +1,5 @@
 /// <reference path="./typings/node/node.d.ts" />
+/// <reference path="./shoptime/models/index.ts" />
 'use strict';
 var express = require('express');
 var routes = require('./routes');
@@ -26,7 +27,7 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-var jason = new shoptime.Store("jason");
+var jason = new shoptime.Store("jason", __dirname);
 
 var stores = new Array();
 stores.push(jason);
@@ -36,10 +37,10 @@ app.all("*", function (req, res, next) {
     var isFound = false;
 
     stores.forEach(function (store) {
-        store.DomainNames.forEach(function (domainName) {
+        store.domainNames.forEach(function (domainName) {
             if (domainName == host && isFound == false) {
                 isFound = true;
-                return store.App(req, res, next);
+                return store.app(req, res, next);
             }
         });
     });
@@ -61,7 +62,7 @@ app.get('/account/add/:name', function (req, res) {
         });
 
         if (isFound == false) {
-            var newStore = new shoptime.Store(name);
+            var newStore = new shoptime.Store(name, __dirname);
             stores.push(newStore);
         }
 

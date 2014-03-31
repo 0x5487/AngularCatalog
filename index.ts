@@ -1,5 +1,5 @@
 /// <reference path="./typings/node/node.d.ts" />
-
+/// <reference path="./shoptime/models/index.ts" />
 
 'use strict';
 var express = require('express');
@@ -32,23 +32,23 @@ if ('development' == app.get('env')) {
 
 
 
-var jason = new shoptime.Store("jason");
+var jason = new shoptime.Store("jason", __dirname);
 
 var stores:Array<shoptime.Store> = new Array<shoptime.Store>();
 stores.push(jason);
 
-app.all("*", (req, res, next) =>{
+app.all("*", (req, res, next) => {
 
     var host = req.host;
     var isFound: boolean = false;
 
     stores.forEach((store)=>{
 
-        store.DomainNames.forEach( (domainName)=>{
+        store.domainNames.forEach( (domainName)=>{
 
             if(domainName == host && isFound == false){
                 isFound = true;
-                return store.App(req, res, next);
+                return store.app(req, res, next);
             }
         });
     });
@@ -73,7 +73,7 @@ app.get('/account/add/:name', (req, res)=>{
         });
 
         if(isFound == false){
-            var newStore = new shoptime.Store(name);
+            var newStore = new shoptime.Store(name, __dirname);
             stores.push(newStore);
         }
 

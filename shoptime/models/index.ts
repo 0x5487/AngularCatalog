@@ -15,12 +15,12 @@ export class Store {
     private _defaultTheme:string;
     private _myStoragePath:string;
 
-    constructor(name:string) {
+    constructor(name:string, rootPath:string) {
         this._name = name;
         this._app = express();
         this._domainNames = [];
         this._defaultTheme = "simple";
-        this._myStoragePath = "D:/OpenSource/AngularCatalog/storage/jason/";
+        this._myStoragePath = path.join(rootPath, name);
         this.Init();
     }
 
@@ -44,11 +44,32 @@ export class Store {
     private Init():void {
 
         this._domainNames.push(this._name + ".mystore.com");
-        var name = this._name;
-
         this._app.set('views', path.join(__dirname, '../../views'));
         this._app.set('view engine', 'ejs');
-        this._app.use('/public', express.static(path.join(this._myStoragePath, 'themes/'+ this._defaultTheme + '/public')));
+        this._app.use(express.cookieParser());
+        this._app.use(express.session({secret: '1234567890QWERTY'}));
+
+        this._app.get("*", (req, res, next)=>{
+
+            var theme = req.query.theme;
+            var sess = req.session;
+            if(theme != null && theme.length > 0){
+                sess.theme = theme;
+
+            }else{
+                if(sess.theme == null){
+                    sess.theme = this.defaultTheme;
+                }
+            }
+
+            next();
+        });
+
+        this._app.use('/public', (req, res, next) =>{
+            var handler = express.static(path.join(this._myStoragePath, 'themes/'+ req.session.theme + '/public'))
+            handler(req, res, next);
+        });
+
 
         this._app.get('/', (req, res) =>{
 
@@ -98,7 +119,7 @@ export class Store {
                         res.send(page.content);
                     }else {
 
-                        var templatePath:string = path.join(this._myStoragePath, "themes/" + this._defaultTheme + '/templates/' + page.template + ".ejs");
+                        var templatePath:string = path.join(this._myStoragePath, "themes/" + req.session.theme + '/templates/' + page.template + ".ejs");
 
                         fs.readFile(templatePath, 'utf8', (err, template) => {
                             if (err) throw err;
@@ -106,12 +127,13 @@ export class Store {
                             var pageResult = ejs.render(template, dataJSON);
                             res.send(pageResult);
                         });
-
                     }
                 });
             }
 
         });
+
+        this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));
     }
 }
 

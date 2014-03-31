@@ -1,5 +1,6 @@
 {
-    "name": "HomePage",
+    "title": "Home Page",
+	"description", "I am a meta description."
     "content": "Welcome to my home page.",
-	"template": "none"
+	"template": "home"
 }
