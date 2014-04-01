@@ -1,12 +1,14 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/q/Q.d.ts" />
 /// <reference path="../typings/express/express.d.ts" />
+/// <reference path="../typings/dustjs-linkedin/dustjs-linkedin.d.ts" />
 'use strict';
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
 var ejs = require('ejs');
-var pages = require('./pages');
+var dust = require('dustjs-linkedin');
+require('dustjs-helpers');
 
 var Store = (function () {
     function Store(name, rootPath) {
@@ -59,14 +61,20 @@ var Store = (function () {
                     throw err;
                 var page = JSON.parse(data);
 
-                var templatePath = path.join(_this._myStoragePath, "themes/" + theme + '/templates/' + page.template + ".ejs");
+                var templatePath = path.join(_this._myStoragePath, "themes/" + theme + '/templates/' + page.template + ".html");
 
                 fs.readFile(templatePath, 'utf8', function (err, template) {
                     if (err)
                         throw err;
+                    var compiled = dust.compile(template, pageName);
+                    dust.loadSource(compiled);
                     var dataJSON = { "title": page.title, "content": page.content };
-                    var pageResult = ejs.render(template, dataJSON);
-                    res.send(pageResult);
+
+                    //var pageResult = ejs.render(template, dataJSON);
+                    dust.render(pageName, dataJSON, function (err, out) {
+                        res.send(out);
+                    });
+                    //res.send(pageResult);
                 });
             });
         }
@@ -100,9 +108,8 @@ var Store = (function () {
         });
 
         this._app.get('/', function (req, res) {
-            var pageName = "home";
             var theme = req.session.theme;
-            _this.sendPage(req, res, theme, pageName);
+            _this.sendPage(req, res, theme, "home");
         });
 
         this._app.get('/admin', function (req, res) {

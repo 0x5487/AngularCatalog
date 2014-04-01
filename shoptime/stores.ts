@@ -1,14 +1,15 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/q/Q.d.ts" />
 /// <reference path="../typings/express/express.d.ts" />
+/// <reference path="../typings/dustjs-linkedin/dustjs-linkedin.d.ts" />
 
 'use strict';
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
 var ejs = require('ejs');
-var pages = require('./pages');
-
+var dust = require('dustjs-linkedin');
+require('dustjs-helpers');
 
 
 export class Store {
@@ -55,13 +56,20 @@ export class Store {
                 if (err) throw err;
                 var page = JSON.parse(data);
 
-                var templatePath:string = path.join(this._myStoragePath, "themes/" + theme + '/templates/' + page.template + ".ejs");
+                var templatePath:string = path.join(this._myStoragePath, "themes/" + theme + '/templates/' + page.template + ".html");
 
                 fs.readFile(templatePath, 'utf8', (err, template) => {
                     if (err) throw err;
+                    var compiled = dust.compile(template, pageName);
+                    dust.loadSource(compiled);
                     var dataJSON = { "title": page.title, "content": page.content};
-                    var pageResult = ejs.render(template, dataJSON);
-                    res.send(pageResult);
+                    //var pageResult = ejs.render(template, dataJSON);
+
+                    dust.render(pageName, dataJSON, function(err, out) {
+                        res.send(out);
+                    });
+
+                    //res.send(pageResult);
                 });
             });
         }
@@ -97,11 +105,9 @@ export class Store {
             handler(req, res, next);
         });
 
-
         this._app.get('/', (req, res) =>{
-            var pageName = "home";
             var theme = req.session.theme;
-            this.sendPage(req, res, theme, pageName);
+            this.sendPage(req, res, theme, "home");
         });
 
         this._app.get('/admin', (req, res) =>{

@@ -8,6 +8,7 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 var shoptime = require('./shoptime/stores');
+var cons = require('consolidate');
 
 
 var app = express();
@@ -17,6 +18,9 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.engine("html", cons.dust);
+app.set('template_engine', "dust");
+app.set('view engine', 'html');
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
