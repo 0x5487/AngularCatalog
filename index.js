@@ -1,12 +1,11 @@
 /// <reference path="./typings/node/node.d.ts" />
-/// <reference path="./shoptime/models/index.ts" />
 'use strict';
 var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-var shoptime = require('./shoptime/models/');
+var shoptime = require('./shoptime/stores');
 
 var app = express();
 
@@ -27,7 +26,9 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-var jason = new shoptime.Store("jason", __dirname);
+var storageRootPath = path.join(__dirname, 'storage');
+
+var jason = new shoptime.Store("jason", storageRootPath);
 
 var stores = new Array();
 stores.push(jason);
@@ -62,7 +63,7 @@ app.get('/account/add/:name', function (req, res) {
         });
 
         if (isFound == false) {
-            var newStore = new shoptime.Store(name, __dirname);
+            var newStore = new shoptime.Store(name, storageRootPath);
             stores.push(newStore);
         }
 
@@ -77,8 +78,6 @@ app.get('/', function (req, res) {
 });
 
 app.get('/', routes.index);
-app.get('/main', routes.main);
-app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

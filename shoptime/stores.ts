@@ -1,10 +1,14 @@
-/// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../typings/node/node.d.ts" />
+/// <reference path="../typings/q/Q.d.ts" />
+/// <reference path="../typings/express/express.d.ts" />
 
 'use strict';
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
 var ejs = require('ejs');
+var pages = require('./pages');
+
 
 
 export class Store {
@@ -41,6 +45,29 @@ export class Store {
         return this._app;
     }
 
+    public sendPage(req, res, theme:string, pageName:string ) {
+
+        if(pageName != null && pageName.length > 0){
+
+            var fileLocation:string = path.join(this._myStoragePath, 'pages/' + pageName + '.json');
+
+            fs.readFile(fileLocation, 'utf8',  (err, data) => {
+                if (err) throw err;
+                var page = JSON.parse(data);
+
+                var templatePath:string = path.join(this._myStoragePath, "themes/" + theme + '/templates/' + page.template + ".ejs");
+
+                fs.readFile(templatePath, 'utf8', (err, template) => {
+                    if (err) throw err;
+                    var dataJSON = { "title": page.title, "content": page.content};
+                    var pageResult = ejs.render(template, dataJSON);
+                    res.send(pageResult);
+                });
+            });
+        }
+    }
+
+
     private Init():void {
 
         this._domainNames.push(this._name + ".mystore.com");
@@ -72,65 +99,23 @@ export class Store {
 
 
         this._app.get('/', (req, res) =>{
-
-            var fileLocation:string = path.join(this._myStoragePath, 'pages/home.json');
-
-            fs.readFile(fileLocation, 'utf8', (err, data) =>{
-                if (err) throw err;
-                var page = JSON.parse(data);
-
-                if(page.template == "none"){
-                    res.send(page.content);
-                }else {
-
-                    var templatePath:string = path.join(this._myStoragePath, 'templates/' + page.template + ".ejs");
-
-                    fs.readFile(templatePath, 'utf8', (err1, data1)=> {
-                        if (err1) throw err1;
-                        var template = JSON.parse(data1);
-
-                        var dataJSON = { "name": page.name, "content": page.content};
-                        var pageResult = ejs.render(template, dataJSON);
-                        res.send(pageResult);
-                    });
-
-                }
-            });
+            var pageName = "home";
+            var theme = req.session.theme;
+            this.sendPage(req, res, theme, pageName);
         });
 
         this._app.get('/admin', (req, res) =>{
             res.render('index', { title: name });
         });
 
+        this._app.get('/admin/main', (req, res) =>{
+            res.render('main');
+        });
 
         this._app.get('/pages/:pageName', (req, res)=>{
-
             var pageName = req.params.pageName;
-
-            if(pageName != null && pageName.length > 0){
-
-                var fileLocation:string = path.join(this._myStoragePath, 'pages/' + pageName + '.json');
-
-                fs.readFile(fileLocation, 'utf8',  (err, data) => {
-                    if (err) throw err;
-                    var page = JSON.parse(data);
-
-                    if(page.template == "none"){
-                        res.send(page.content);
-                    }else {
-
-                        var templatePath:string = path.join(this._myStoragePath, "themes/" + req.session.theme + '/templates/' + page.template + ".ejs");
-
-                        fs.readFile(templatePath, 'utf8', (err, template) => {
-                            if (err) throw err;
-                            var dataJSON = { "name": page.name, "content": page.content};
-                            var pageResult = ejs.render(template, dataJSON);
-                            res.send(pageResult);
-                        });
-                    }
-                });
-            }
-
+            var theme = req.session.theme;
+            this.sendPage(req, res, theme, pageName);
         });
 
         this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));

@@ -1,9 +1,12 @@
-/// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../typings/node/node.d.ts" />
+/// <reference path="../typings/q/Q.d.ts" />
+/// <reference path="../typings/express/express.d.ts" />
 'use strict';
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
 var ejs = require('ejs');
+var pages = require('./pages');
 
 var Store = (function () {
     function Store(name, rootPath) {
@@ -46,6 +49,29 @@ var Store = (function () {
         configurable: true
     });
 
+    Store.prototype.sendPage = function (req, res, theme, pageName) {
+        var _this = this;
+        if (pageName != null && pageName.length > 0) {
+            var fileLocation = path.join(this._myStoragePath, 'pages/' + pageName + '.json');
+
+            fs.readFile(fileLocation, 'utf8', function (err, data) {
+                if (err)
+                    throw err;
+                var page = JSON.parse(data);
+
+                var templatePath = path.join(_this._myStoragePath, "themes/" + theme + '/templates/' + page.template + ".ejs");
+
+                fs.readFile(templatePath, 'utf8', function (err, template) {
+                    if (err)
+                        throw err;
+                    var dataJSON = { "title": page.title, "content": page.content };
+                    var pageResult = ejs.render(template, dataJSON);
+                    res.send(pageResult);
+                });
+            });
+        }
+    };
+
     Store.prototype.Init = function () {
         var _this = this;
         this._domainNames.push(this._name + ".mystore.com");
@@ -74,61 +100,23 @@ var Store = (function () {
         });
 
         this._app.get('/', function (req, res) {
-            var fileLocation = path.join(_this._myStoragePath, 'pages/home.json');
-
-            fs.readFile(fileLocation, 'utf8', function (err, data) {
-                if (err)
-                    throw err;
-                var page = JSON.parse(data);
-
-                if (page.template == "none") {
-                    res.send(page.content);
-                } else {
-                    var templatePath = path.join(_this._myStoragePath, 'templates/' + page.template + ".ejs");
-
-                    fs.readFile(templatePath, 'utf8', function (err1, data1) {
-                        if (err1)
-                            throw err1;
-                        var template = JSON.parse(data1);
-
-                        var dataJSON = { "name": page.name, "content": page.content };
-                        var pageResult = ejs.render(template, dataJSON);
-                        res.send(pageResult);
-                    });
-                }
-            });
+            var pageName = "home";
+            var theme = req.session.theme;
+            _this.sendPage(req, res, theme, pageName);
         });
 
         this._app.get('/admin', function (req, res) {
             res.render('index', { title: name });
         });
 
+        this._app.get('/admin/main', function (req, res) {
+            res.render('main');
+        });
+
         this._app.get('/pages/:pageName', function (req, res) {
             var pageName = req.params.pageName;
-
-            if (pageName != null && pageName.length > 0) {
-                var fileLocation = path.join(_this._myStoragePath, 'pages/' + pageName + '.json');
-
-                fs.readFile(fileLocation, 'utf8', function (err, data) {
-                    if (err)
-                        throw err;
-                    var page = JSON.parse(data);
-
-                    if (page.template == "none") {
-                        res.send(page.content);
-                    } else {
-                        var templatePath = path.join(_this._myStoragePath, "themes/" + req.session.theme + '/templates/' + page.template + ".ejs");
-
-                        fs.readFile(templatePath, 'utf8', function (err, template) {
-                            if (err)
-                                throw err;
-                            var dataJSON = { "name": page.name, "content": page.content };
-                            var pageResult = ejs.render(template, dataJSON);
-                            res.send(pageResult);
-                        });
-                    }
-                });
-            }
+            var theme = req.session.theme;
+            _this.sendPage(req, res, theme, pageName);
         });
 
         this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));
@@ -136,4 +124,4 @@ var Store = (function () {
     return Store;
 })();
 exports.Store = Store;
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=stores.js.map
