@@ -17,6 +17,7 @@ var Store = (function () {
         this._domainNames = [];
         this._defaultTheme = "simple";
         this._myStoragePath = path.join(rootPath, name);
+        Store.MYNAME = this._myStoragePath;
         this.Init();
     }
     Object.defineProperty(Store.prototype, "name", {
@@ -51,6 +52,26 @@ var Store = (function () {
         configurable: true
     });
 
+    Store.prototype.getJSON = function (chunk, context, bodies, params) {
+        var pageName = "home";
+
+        var fileLocation = path.join(Store.MYNAME, 'pages/' + pageName + '.json');
+
+        return chunk.map(function (chunk) {
+            fs.readFile(fileLocation, 'utf8', function (err, pageData) {
+                if (err)
+                    throw err;
+                console.log(pageData);
+                chunk.end(pageData);
+            });
+        });
+        /*return chunk.map((chunk)=> {
+        setTimeout(()=> {
+        chunk.end(Store.MYNAME);
+        });
+        });*/
+    };
+
     Store.prototype.sendPage = function (req, res, theme, pageName) {
         var _this = this;
         if (pageName != null && pageName.length > 0) {
@@ -66,12 +87,18 @@ var Store = (function () {
                 fs.readFile(templatePath, 'utf8', function (err, template) {
                     if (err)
                         throw err;
+
+                    var base = dust.makeBase({
+                        sayHello: _this.getJSON
+                    });
+
                     var compiled = dust.compile(template, pageName);
                     dust.loadSource(compiled);
                     var dataJSON = { "title": page.title, "content": page.content };
 
                     //var pageResult = ejs.render(template, dataJSON);
-                    dust.render(pageName, dataJSON, function (err, out) {
+                    dust.isDebug = true;
+                    dust.render(pageName, base.push(dataJSON), function (err, out) {
                         res.send(out);
                     });
                     //res.send(pageResult);
@@ -128,6 +155,7 @@ var Store = (function () {
 
         this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));
     };
+    Store.MYNAME = "Jason";
     return Store;
 })();
 exports.Store = Store;

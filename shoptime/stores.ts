@@ -19,6 +19,7 @@ export class Store {
     private _domainNames:string[];
     private _defaultTheme:string;
     private _myStoragePath:string;
+    public static MYNAME: string = "Jason";
 
     constructor(name:string, rootPath:string) {
         this._name = name;
@@ -26,6 +27,7 @@ export class Store {
         this._domainNames = [];
         this._defaultTheme = "simple";
         this._myStoragePath = path.join(rootPath, name);
+        Store.MYNAME = this._myStoragePath;
         this.Init();
     }
 
@@ -46,6 +48,31 @@ export class Store {
         return this._app;
     }
 
+
+    public getJSON(chunk, context, bodies, params) {
+
+        var pageName = "home";
+
+        var fileLocation:string = path.join(Store.MYNAME, 'pages/' + pageName + '.json');
+
+
+        return chunk.map((chunk)=> {
+            fs.readFile(fileLocation, 'utf8', (err, pageData) => {
+                if (err) throw err;
+                console.log(pageData);
+                chunk.end(pageData);
+            });
+        });
+
+        /*return chunk.map((chunk)=> {
+            setTimeout(()=> {
+                chunk.end(Store.MYNAME);
+            });
+        });*/
+    }
+
+
+
     public sendPage(req, res, theme:string, pageName:string ) {
 
         if(pageName != null && pageName.length > 0){
@@ -60,12 +87,17 @@ export class Store {
 
                 fs.readFile(templatePath, 'utf8', (err, template) => {
                     if (err) throw err;
+
+                    var base = dust.makeBase({
+                        sayHello: this.getJSON
+                    });
+
                     var compiled = dust.compile(template, pageName);
                     dust.loadSource(compiled);
                     var dataJSON = { "title": page.title, "content": page.content};
                     //var pageResult = ejs.render(template, dataJSON);
-
-                    dust.render(pageName, dataJSON, function(err, out) {
+                    dust.isDebug = true;
+                    dust.render(pageName, base.push(dataJSON), (err, out)=> {
                         res.send(out);
                     });
 
