@@ -48,28 +48,42 @@ export class Store {
         return this._app;
     }
 
+    public createVariable(chunk, context, bodies, params):void {
 
-    public getJSON(chunk, context, bodies, params) {
+        var id = dust.helpers.tap(params.id, chunk, context);
+        var value = dust.helpers.tap(params.valu, chunk, context);
 
-        var pageName = "home";
-
-        var fileLocation:string = path.join(Store.MYNAME, 'pages/' + pageName + '.json');
-
-
-        return chunk.map((chunk)=> {
-            fs.readFile(fileLocation, 'utf8', (err, pageData) => {
-                if (err) throw err;
-                console.log(pageData);
-                chunk.end(pageData);
-            });
-        });
-
-        /*return chunk.map((chunk)=> {
-            setTimeout(()=> {
-                chunk.end(Store.MYNAME);
-            });
-        });*/
+        var data = {};
+        data[id] = value;
+        context[id] = value;
+        //var ctx = context.push(data);
+        return chunk.render(bodies.block, context);
     }
+
+    public getCollections(chunk, context, bodies, params):void {
+
+        var dataName = "collections";
+        var fileLocation:string = path.join(Store.MYNAME, 'data/' + dataName + '.json');
+        var id = dust.helpers.tap(params.id, chunk, context);
+        var find = dust.helpers.tap(params.find, chunk, context);
+
+        if(find){
+
+        }else{
+            return chunk.map((chunk)=> {
+                fs.readFile(fileLocation, 'utf8', (err, data) => {
+                    if (err) throw err;
+
+                    var jsonData = {};
+                    jsonData[id] = JSON.parse(data);
+                    return chunk.render(bodies.block, context.push(jsonData)).end();
+                });
+            });
+        }
+
+    }
+
+
 
 
 
@@ -89,14 +103,16 @@ export class Store {
                     if (err) throw err;
 
                     var base = dust.makeBase({
-                        sayHello: this.getJSON
+                        key: "mykey"
                     });
 
+                    dust.isDebug = true;
                     var compiled = dust.compile(template, pageName);
                     dust.loadSource(compiled);
                     var dataJSON = { "title": page.title, "content": page.content};
-                    //var pageResult = ejs.render(template, dataJSON);
-                    dust.isDebug = true;
+                    dust.helpers.collections = this.getCollections;
+                    dust.helpers.vari = this.createVariable;
+
                     dust.render(pageName, base.push(dataJSON), (err, out)=> {
                         res.send(out);
                     });

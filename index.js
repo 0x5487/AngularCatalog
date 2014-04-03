@@ -81,8 +81,6 @@ app.get('/', function (req, res) {
     res.send('Hello from main!');
 });
 
-app.get('/', routes.index);
-
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
