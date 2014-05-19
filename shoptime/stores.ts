@@ -148,6 +148,7 @@ export class Store {
             next();
         });
 
+        this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));
         this._app.use('/public', (req, res, next) =>{
             var handler = express.static(path.join(this._myStoragePath, 'themes/'+ req.session.theme + '/public'))
             handler(req, res, next);
@@ -172,7 +173,7 @@ export class Store {
             this.sendPage(req, res, theme, pageName);
         });
 
-        this._app.use('/files', express.static(path.join(this._myStoragePath, 'files')));
+
     }
 }
 
